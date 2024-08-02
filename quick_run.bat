@@ -1,0 +1,2 @@
+python zzz.py
+pause
