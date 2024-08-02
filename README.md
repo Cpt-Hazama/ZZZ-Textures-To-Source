@@ -4,3 +4,5 @@ Copy your extracted textures into the scripts directory and run the batch file. 
 # Notes
 - To get the full effect, use my Dynamic ENV Map mod so you don't have fullbright cubemaps
 - What I assume is early-build textures for ZZZ, these rare occurences don't work with the script and will be converted incorrectly. I will look into detecting these later on
+
+![image](https://github.com/user-attachments/assets/514d3247-2d16-4431-9b75-2fe8383d2eae)
