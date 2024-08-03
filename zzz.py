@@ -50,7 +50,6 @@ def generateVMT(group_name, char_name, full_base_name, output_dir="Converted"):
     vmt_content = f'''"VertexLitGeneric"
 {{
     "$basetexture"               "models/cpthazama/zzz/{char_name}/{full_base_name}_D"
-    "$detail"                    "models/cpthazama/zzz/{char_name}/{full_base_name}_D"
     "$phongexponenttexture"      "models/cpthazama/zzz/{char_name}/{full_base_name}_S"
     "$bumpmap"                   "models/cpthazama/zzz/{char_name}/{full_base_name}_N"
 
