@@ -17,8 +17,8 @@ def processPBR(group_name, m_file, a_file=None, output_dir="Converted"):
     print("Found PBR texture: ", m_file)
     m_image = Image.open(m_file).convert('RGBA')
 
-    r_channel = grabChannel(m_image, 'B')
-    g_channel = grabChannel(m_image, 'G')
+    r_channel = grabChannel(m_image, 'G')
+    g_channel = grabChannel(m_image, 'B')
 
     b_channel = Image.fromarray(np.full((m_image.size[1], m_image.size[0]), 255, dtype=np.uint8))
 
@@ -34,8 +34,8 @@ def processNormal(group_name, n_file, m_file=None, output_dir="Converted"):
 
     if m_file:
         m_image = Image.open(m_file).convert('RGBA')
-        m_green_channel = grabChannel(m_image, 'G')
-        new_image = Image.merge('RGBA', (r_channel, g_channel, b_channel, m_green_channel))
+        m_blue_channel = grabChannel(m_image, 'B')
+        new_image = Image.merge('RGBA', (r_channel, g_channel, b_channel, m_blue_channel))
     else:
         new_image = Image.merge('RGB', (r_channel, g_channel, b_channel))
 
