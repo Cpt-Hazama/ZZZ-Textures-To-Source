@@ -1,0 +1,13 @@
+"Patch"
+{
+    include "materials/models/cpthazama/zzz/shared_common.vmt"
+    replace
+    {
+        "$basetexture" 				"models/cpthazama/zzz/zhuyuan/ZhuYuan_Face_D"
+        "$phongexponenttexture" 	"models/cpthazama/zzz/Female_Face_M"
+
+        "$phongboost"                "1"
+        "$phongalbedoboost"          "1"
+		"$envmaptint" 				 "[0 0 0]"
+    }
+}

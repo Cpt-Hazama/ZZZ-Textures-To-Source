@@ -1,0 +1,10 @@
+"Patch"
+{
+    include "materials/models/cpthazama/zzz/shared_common.vmt"
+    replace
+    {
+        "$basetexture" 				"models/cpthazama/zzz/zhuyuan/ZhuYuan_Body_Map1_D"
+        "$phongexponenttexture" 	"models/cpthazama/zzz/zhuyuan/ZhuYuan_Body_Map1_S"
+        "$bumpmap"					"models/cpthazama/zzz/zhuyuan/ZhuYuan_Body_Map1_N"
+    }
+}

@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$basetexture" 				"models/cpthazama/zzz/tone_control"
+	"$bumpmap" 					"models/cpthazama/honkai_sr/flat"
+
+    "$nodecal" 					"1"
+    "$translucent" 				"1"
+    "$allowalphatocoverage" 	"1"
+}

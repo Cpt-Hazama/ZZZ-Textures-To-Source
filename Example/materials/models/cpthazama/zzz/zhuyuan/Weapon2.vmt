@@ -1,0 +1,10 @@
+"Patch"
+{
+    include "materials/models/cpthazama/zzz/shared_common.vmt"
+    replace
+    {
+        "$basetexture" 				"models/cpthazama/zzz/zhuyuan/ZhuYuan_Weapon_Map2_D"
+        "$phongexponenttexture" 	"models/cpthazama/zzz/zhuyuan/ZhuYuan_Weapon_Map2_S"
+        "$bumpmap"					"models/cpthazama/zzz/zhuyuan/ZhuYuan_Weapon_Map2_N"
+    }
+}
