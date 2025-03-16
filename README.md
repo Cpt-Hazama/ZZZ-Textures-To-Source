@@ -1,11 +1,13 @@
 # Usage
-Copy your extracted textures into the scripts directory and run the batch file. It will create a folder called 'Converted' with the new textures/VMTs. Note that the VMTs are configured for my own usage, so you may need to alter the format for your own needs/setup
+Run the python script via CMD or the batch file and select the folder containing your ZZZ textures (PNG/TGA). It will create a folder called 'Converted' with the new textures/VMTs. Note that the VMTs are configured for my own usage, so you may need to alter the format for your own needs/setup
 
 # Notes
 - To get the full effect, use my Dynamic ENV Map mod so you don't have fullbright cubemaps
 - What I assume is early-build textures for ZZZ, these rare occurences don't work with the script and will be converted incorrectly. I will look into detecting these later on
 
-![Burnice3](https://github.com/user-attachments/assets/200ae7bc-b427-4219-85f3-be2ed6bbe0da)
-![image](https://github.com/user-attachments/assets/514d3247-2d16-4431-9b75-2fe8383d2eae)
-![Untitled](https://github.com/user-attachments/assets/f728c8d0-3751-4a09-92a3-8ad8111cfd11)
-![image](https://github.com/user-attachments/assets/26085d98-609e-4e0f-84b3-9ed1d0b92a98)
+# Media
+![1](https://github.com/user-attachments/assets/d413e4dc-db04-4bfc-bfaa-024fcf2c2d06)
+![2](https://github.com/user-attachments/assets/c92fd63a-f2d7-4354-a3fa-c90b1d843a0d)
+![3](https://github.com/user-attachments/assets/bb2e50d6-e7ef-4c08-b331-571a9fabb0cf)
+![5](https://github.com/user-attachments/assets/8f435ccd-6eb7-4336-89dd-ec7d5219377f)
+![Ani_MainCity_Walk_Cropped](https://github.com/user-attachments/assets/31b1fa70-29cb-4167-a1ac-1bb0b76cc8d5)
