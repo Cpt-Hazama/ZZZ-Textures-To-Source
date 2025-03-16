@@ -1,6 +1,8 @@
 import os
 import numpy as np
 from PIL import Image
+import tkinter as tk
+from tkinter import filedialog
 
 def grabChannel(image, channel):
     channels = {'R': 0, 'G': 1, 'B': 2, 'A': 3}
@@ -13,126 +15,102 @@ def grabChannel(image, channel):
     else:
         raise ValueError(f"Unsupported channel: {channel}")
 
-def processPBR(group_name, m_file, a_file=None, output_dir="Converted"):
-    print("Found PBR texture: ", m_file)
-    m_image = Image.open(m_file).convert('RGBA')
+def processPBR(groupName, pbr, a_file=None, outputDir="Converted"):
+    print("Found PBR texture: ", pbr)
+    mTex = Image.open(pbr).convert('RGBA')
+    r_channel = grabChannel(mTex, 'G')
+    g_channel = grabChannel(mTex, 'B')
+    b_channel = Image.fromarray(np.full((mTex.size[1], mTex.size[0]), 255, dtype=np.uint8))
 
-    r_channel = grabChannel(m_image, 'G')
-    g_channel = grabChannel(m_image, 'B')
+    finalTex = Image.merge('RGB', (r_channel, g_channel, b_channel))
+    finalTex.save(os.path.join(outputDir, f"{groupName}_S.tga"))
 
-    b_channel = Image.fromarray(np.full((m_image.size[1], m_image.size[0]), 255, dtype=np.uint8))
+def processNormal(groupName, normal, pbr=None, outputDir="Converted"):
+    print("Found Normal texture: ", normal)
+    nTex = Image.open(normal).convert('RGBA')
+    r_channel = grabChannel(nTex, 'R')
+    g_channel = grabChannel(nTex, 'G')
+    b_channel = grabChannel(nTex, 'W')
 
-    new_image = Image.merge('RGB', (r_channel, g_channel, b_channel))
-    new_image.save(os.path.join(output_dir, f"{group_name}_S.tga"))
-
-def processNormal(group_name, n_file, m_file=None, output_dir="Converted"):
-    print("Found Normal texture: ", n_file)
-    n_image = Image.open(n_file).convert('RGBA')
-    r_channel = grabChannel(n_image, 'R')
-    g_channel = grabChannel(n_image, 'G')
-    b_channel = grabChannel(n_image, 'W')
-
-    if m_file:
-        m_image = Image.open(m_file).convert('RGBA')
-        m_blue_channel = grabChannel(m_image, 'B')
-        new_image = Image.merge('RGBA', (r_channel, g_channel, b_channel, m_blue_channel))
+    if pbr:
+        mTex = Image.open(pbr).convert('RGBA')
+        mTexBlueChannel = grabChannel(mTex, 'B')
+        if mTexBlueChannel.size != nTex.size:
+            mTexBlueChannel = mTexBlueChannel.resize(nTex.size, Image.Resampling.LANCZOS)
+        finalTex = Image.merge('RGBA', (r_channel, g_channel, b_channel, mTexBlueChannel))
     else:
-        new_image = Image.merge('RGB', (r_channel, g_channel, b_channel))
+        finalTex = Image.merge('RGB', (r_channel, g_channel, b_channel))
 
-    new_image.save(os.path.join(output_dir, f"{group_name}_N.tga"))
+    finalTex.save(os.path.join(outputDir, f"{groupName}_N.tga"))
 
-def processDiffuse(group_name, d_file, output_dir="Converted"):
-    print("Found Diffuse texture: ", d_file)
-    d_image = Image.open(d_file).convert('RGBA')
-    d_image.save(os.path.join(output_dir, f"{group_name}_D.tga"))
+def processDiffuse(groupName, diffuse, outputDir="Converted"):
+    print("Found Diffuse texture: ", diffuse)
+    dTex = Image.open(diffuse).convert('RGBA')
+    dTex.save(os.path.join(outputDir, f"{groupName}_D.tga"))
 
-def generateVMT(group_name, char_name, full_base_name, output_dir="Converted"):
-    vmt_content = f'''"VertexLitGeneric"
+def generateVMT(groupName, chrName, fullBaseName, outputDir="Converted"):
+    vmt_content = f'''"Patch"
 {{
-    "$basetexture"               "models/cpthazama/zzz/{char_name}/{full_base_name}_D"
-    "$phongexponenttexture"      "models/cpthazama/zzz/{char_name}/{full_base_name}_S"
-    "$bumpmap"                   "models/cpthazama/zzz/{char_name}/{full_base_name}_N"
-
-    "$color2"                    "[1.5 1.5 1.5]"
-    "$nodecal"                   "1"
-    "$nocull"                    "1"
-    "$ambientocclusion"          "1"
-    "$alphatest"                 "1"
-    "$allowalphatocoverage"      "1"
-
-    "$phong"                     "1"
-    "$phongboost"                "10"
-    "$phongfresnelranges"        "[0.1 0.356 0.525]"
-    "$phongalbedotint"           "1"
-    "$phongalbedoboost"          "50"
-
-    "$normalmapalphaenvmapmask"  "1"
-	"$envmapfresnel"             "1"
-	"$envmap"                    "env_cubemap"
-	"$envmaptint" 				 "[1 1 1]"
-
-    "$rimlight"                  "1"
-    "$rimlightexponent"          "5000"
-    "$rimlightboost"             "2"
-
-	"$DEM_TintScale" 			"[1 1 1]"
-	"$DEM_Multiplier" 			"0.5"
-
-    "Proxies" 
+    include "materials/models/cpthazama/zzz/shared_common.vmt"
+    replace
     {{
-        "DynamicEnvMap"
-        {{
-            resultVar   "$envmaptint"
-        }}
+        "$basetexture"               "models/cpthazama/zzz/{chrName}/{fullBaseName}_D"
+        "$phongexponenttexture"      "models/cpthazama/zzz/{chrName}/{fullBaseName}_S"
+        "$bumpmap"                   "models/cpthazama/zzz/{chrName}/{fullBaseName}_N"
     }}
-
-    "$lightwarptexture"          "models/cpthazama/zzz/shader"
 }}
 '''
-    vmt_file = os.path.join(output_dir, f"{group_name}.vmt")
+    vmt_file = os.path.join(outputDir, f"{groupName}.vmt")
     with open(vmt_file, 'w') as f:
         f.write(vmt_content)
     print(f"Generated VMT file: {vmt_file}")
 
 def main():
-    files = [f for f in os.listdir() if f.lower().endswith(('.png', '.tga'))]
-    groups = {}
+    root = tk.Tk()
+    root.withdraw()
+    inputFolder = filedialog.askdirectory(title="Select Input Folder")
 
-    output_dir = "Converted"
-    last_group = None
-    os.makedirs(output_dir, exist_ok=True)
+    if not inputFolder:
+        print("No folder selected. Exiting.")
+        return
+
+    files = [f for f in os.listdir(inputFolder) if f.lower().endswith(('.png', '.tga'))]
+    groups = {}
+    outputDir = os.path.join(inputFolder, "Converted")
+    lastGroup = None
+    os.makedirs(outputDir, exist_ok=True)
 
     for f in files:
-        name_parts = f.rsplit('_', 1)
-        if len(name_parts) < 2:
+        nameBlocks = f.rsplit('_', 1)
+        if len(nameBlocks) < 2:
             continue
-        group_name = name_parts[0]
-        identifier = name_parts[1].split('.')[0]
-        if group_name not in groups:
-            groups[group_name] = {}
-        groups[group_name][identifier.upper()] = f
+        groupName = nameBlocks[0]
+        identifier = nameBlocks[1].split('.')[0]
+        if groupName not in groups:
+            groups[groupName] = {}
+        groups[groupName][identifier.upper()] = os.path.join(inputFolder, f)
 
-    for group_name, file_dict in groups.items():
-        if last_group != group_name:
+    for groupName, fileDict in groups.items():
+        if lastGroup != groupName:
             print("==========================================")
-        last_group = group_name
-        if 'M' not in file_dict and 'N' not in file_dict and 'D' not in file_dict:
-            print(f"Skipping {group_name} as it doesn't meet the standard requirements.")
+        lastGroup = groupName
+        if 'M' not in fileDict and 'N' not in fileDict and 'D' not in fileDict:
+            print(f"Skipping {groupName} as it doesn't meet the standard requirements.")
             continue
-        print(f"Converting {group_name} textures...")
-        
-        parts = group_name.split('_')
-        char_name = parts[0].lower()
-        base_name = '_'.join(parts[1:])
-        full_base_name = f"{char_name.capitalize()}_{base_name}"
-        
-        if 'M' in file_dict:
-            processPBR(group_name, file_dict['M'], file_dict.get('A'), output_dir)
-        if 'N' in file_dict:
-            processNormal(group_name, file_dict['N'], file_dict.get('M'), output_dir)
-        if 'D' in file_dict:
-            processDiffuse(group_name, file_dict['D'], output_dir)
-        generateVMT(group_name, char_name, full_base_name, output_dir)
+        print(f"Converting {groupName} textures...")
+
+        nameBlocks = groupName.split('_')
+        chrName = nameBlocks[0].lower()
+        baseName = '_'.join(nameBlocks[1:])
+        fullBaseName = f"{chrName.capitalize()}_{baseName}"
+
+        if 'M' in fileDict:
+            processPBR(groupName, fileDict['M'], fileDict.get('A'), outputDir)
+        if 'N' in fileDict:
+            processNormal(groupName, fileDict['N'], fileDict.get('M'), outputDir)
+        if 'D' in fileDict:
+            processDiffuse(groupName, fileDict['D'], outputDir)
+        generateVMT(groupName, chrName, fullBaseName, outputDir)
 
 if __name__ == "__main__":
     main()
